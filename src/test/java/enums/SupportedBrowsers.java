@@ -8,7 +8,7 @@ public enum SupportedBrowsers {
 
     public final String path;
 
-    private SupportedBrowsers(String webDriverPath) {
+    SupportedBrowsers(String webDriverPath) {
         this.path = webDriverPath;
     }
 }

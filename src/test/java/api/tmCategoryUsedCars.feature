@@ -10,12 +10,12 @@ Feature: Category method - UsedCars
     * assert allMakes.length == 77
 
 
-  # this test fails against sandbox --- works against prod site
-  Scenario: Retrieve used cars by make (sandbox)
-    Given url 'https://api.tmsandbox.co.nz/v1/Categories/UsedCars.json'
-    And param with_counts = 'true'
-    When method GET
-    Then status 200
+#  # this test fails against sandbox --- works against prod site
+#  Scenario: Retrieve used cars by make (sandbox)
+#    Given url 'https://api.tmsandbox.co.nz/v1/Categories/UsedCars.json'
+#    And param with_counts = 'true'
+#    When method GET
+#    Then status 200
 
 
   # this test fails against sandbox --- works against prod site

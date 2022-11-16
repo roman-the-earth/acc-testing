@@ -2,6 +2,7 @@ package ui;
 
 import enums.SupportedBrowsers;
 import helpers.WebHelper;
+import org.apache.log4j.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -18,7 +19,8 @@ import java.util.*;
 
 public class TestMotorsPage {
 
-    private SoftAssert softAssert = new SoftAssert();
+    private final Logger logger = Logger.getLogger("TestMotorsPage");
+    private final SoftAssert softAssert = new SoftAssert();
 
     @DataProvider(name = "BackendMakeData")
     public Object[][] availableMakeData() {
@@ -62,12 +64,14 @@ public class TestMotorsPage {
         // as found in the backend db
 
         // get list from WebUI
-        Log.info("Getting count of available makes");
+        logger.info("Starting 'VerifyAvailableMakesCount' test");
         WebDriver driver = WebHelper.getWebDriver(SupportedBrowsers.Chrome);
         Map<String, List<String>> uiMakeData = WebHelper.getAvailableMakes(driver);
 
         List<String> uiMakes = uiMakeData.get("makes");
         List<String> uiNonMakes = uiMakeData.get("nonMakes");
+        logger.info(String.format("Found %d available makes", uiMakes.size()));
+        logger.info(String.format("Found %d available non-makes", uiNonMakes.size()));
 
         String message = String.format("UI available makes (%d) do not match count in db (%d).",
                 uiMakes.size(), dbMakeList.size());
@@ -75,23 +79,25 @@ public class TestMotorsPage {
 
         message = String.format("UI available non-makes (%d) do not match count in db (%d).",
                 uiNonMakes.size(), dbNonMakeOptions.size());
-        Assert.assertEquals(uiNonMakes.size(), dbNonMakeOptions.size());
+        Assert.assertEquals(uiNonMakes.size(), dbNonMakeOptions.size(), message);
     }
 
     @Test(dataProvider = "BackendDataByMake")
     public void VerifyAvailableCountByMake(SortedMap<String, Integer> dbCarsByMake) {
+        logger.info("Starting 'VerifyAvailableCountByMake' test");
         // verify that the webUI returns the same number for a given make
         // as found in the backend db
 
         // get count of cars by make from WebUI
         WebDriver driver = WebHelper.getWebDriver(SupportedBrowsers.Chrome);
         Map<String, Integer> uiMakeData = WebHelper.getCarsByMake(driver, dbCarsByMake.keySet());
+        logger.info(String.format("Found %d available makes", uiMakeData.size()));
 
         // reconcile expected db counts against UI counts
         dbCarsByMake.keySet().forEach(dbKey -> {
-            Log.info(String.format("Query '%s'...", dbKey));
             Integer dbCount = dbCarsByMake.get(dbKey);
             Integer uiCount = uiMakeData.get(dbKey);
+            logger.info(String.format("Found %d cars for make '%s'", uiCount, dbKey));
             String errMsg = String.format("'%s' returns count of %d in UI, when %d found in db.",
                     dbKey, uiCount, dbCount);
             softAssert.assertEquals(uiCount, dbCount, errMsg);
